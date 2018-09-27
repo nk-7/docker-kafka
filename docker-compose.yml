@@ -7,3 +7,79 @@ services:
     hostname: zoo1
     ports:
       - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+
+  zoo2:
+    image: zookeeper
+    restart: always
+    hostname: zoo2
+    ports:
+      - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zoo3:2888:3888
+
+  zoo3:
+    image: zookeeper
+    restart: always
+    hostname: zoo3
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=0.0.0.0:2888:3888
+
+# https://hub.docker.com/r/ches/kafka/
+  kafka1:
+    image: ches/kafka
+    restart: always
+    hostname: kafka1
+    ports:
+      - 9092:9092
+      - 7203:7203
+    volumes:
+      - ./kafka1/data:/data
+      - ./kafka1/logs:/logs
+    environment:
+      - KAFKA_BROKER_ID=1
+      - ZOOKEEPER_CONNECTION_STRING=zoo1:2181,zoo2:2182,zoo3:2183
+      - KAFKA_ADVERTISED_HOST_NAME=172.20.29.122
+      - KAFKA_ADVERTISED_PORT=9092
+
+  kafka2:
+    image: ches/kafka
+    restart: always
+    hostname: kafka2
+    ports:
+      - 9093:9092
+      - 7204:7203
+    volumes:
+      - ./kafka2/data:/data
+      - ./kafka2/logs:/logs
+    environment:
+      - KAFKA_BROKER_ID=2
+      - ZOOKEEPER_CONNECTION_STRING=zoo1:2181,zoo2:2182,zoo3:2183
+      - KAFKA_ADVERTISED_HOST_NAME=172.20.29.122
+      - KAFKA_ADVERTISED_PORT=9093
+
+  kafka3:
+    image: ches/kafka
+    restart: always
+    hostname: kafka3
+    ports:
+      - 9094:9092
+      - 7205:7203
+    volumes:
+      - ./kafka3/data:/data
+      - ./kafka3/logs:/logs
+    environment:
+      - KAFKA_BROKER_ID=3
+      - ZOOKEEPER_CONNECTION_STRING=zoo1:2181,zoo2:2182,zoo3:2183
+      - KAFKA_ADVERTISED_HOST_NAME=172.20.29.122
+      - KAFKA_ADVERTISED_PORT=9094
+
+
+
+
